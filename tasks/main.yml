@@ -8,11 +8,16 @@
 
 - name: Import OS-specific tasks
   import_tasks: ubuntu.yaml
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_distribution == "Ubuntu"
 
-- name: Install Neovim
+- name: Add additional packages to install on Linux hosts
+  set_fact:
+    neovim_packages: "{{ neovim_packages | union(neovim_packages_linux) }}"
+  when: ansible_os_family != "Darwin"
+
+- name: Install packages
   package:
-    name: neovim
+    name: "{{ neovim_packages }}"
   become: true if ansible_distribution != 'MacOSX' else false
 
 - name: Install vim-plug
