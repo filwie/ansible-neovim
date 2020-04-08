@@ -1,0 +1,24 @@
+---
+- name: Verify
+  hosts: all
+  vars:
+    minimal_version: "0.4.3"
+  tasks:
+    - name: Check Neovim version
+      command: nvim --version
+      changed_when: false
+      register: neovim_version_result
+
+    - name: Parse Neovim version
+      set_fact:
+        neovim_version: "{{ neovim_version_result.stdout_lines
+                            | first
+                            | regex_search('\\d(:?\\.\\d){1,3}') }}"
+
+    - name: Assert Neovim Version is high enough
+      assert:
+        that: neovim_version is version(minimal_version, '>=')
+        fail_msg: |
+          Detected Neovim version ({{ neovim_version }}) does not meet requirements (>= {{ minimal_version }})
+        success_msg: |
+          Detected Neovim version ({{ neovim_version }}) meets requirements (>= {{ minimal_version }})

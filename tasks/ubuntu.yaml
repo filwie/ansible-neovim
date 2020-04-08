@@ -1,0 +1,10 @@
+---
+- name: Install prerequisites
+  apt:
+    name: software-properties-common
+  become: true
+
+- name: Add Neovim unstable PPA
+  apt_repository:
+    repo: "ppa:neovim-ppa/unstable"
+  become: true

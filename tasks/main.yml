@@ -1,0 +1,28 @@
+---
+- name: Make sure facts are available
+  assert:
+    that:
+      - ansible_distribution is defined
+      - ansible_env is defined
+    fail_msg: "This role requires access to Ansible facts"
+
+- name: Import OS-specific tasks
+  import_tasks: ubuntu.yaml
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install Neovim
+  package:
+    name: neovim
+  become: true if ansible_distribution != 'MacOSX' else false
+
+- name: Install vim-plug
+  block:
+    - name: Make sure Neovim autoload directory exists
+      file:
+        path: "{{ neovim_autoload_dir }}"
+        state: directory
+
+    - name: Download vim-plug
+      get_url:
+        url: "{{ neovim_vim_plug_url }}"
+        dest: "{{ neovim_autoload_dir }}"
