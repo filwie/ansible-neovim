@@ -18,7 +18,7 @@
 - name: Install packages
   package:
     name: "{{ neovim_packages }}"
-  become: true if ansible_distribution != 'MacOSX' else false
+  become: "{{ neovim_become_to_install_packages }}"
 
 - name: Install vim-plug
   block:
